@@ -1,0 +1,13 @@
+{
+  "i18n-ally.localesPaths": ["locales"],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.sortKeys": true,
+  "i18n-ally.namespace": true,
+  "i18n-ally.enabledParsers": ["js"],
+  "i18n-ally.sourceLanguage": "fr-ca",
+  "i18n-ally.enabledFrameworks": [
+    "vue"
+  ],
+  "material-icon-theme.activeIconPack": "vue_vuex",
+  "nuxt.isNuxtApp": true,
+}

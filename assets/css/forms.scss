@@ -1,0 +1,155 @@
+//Filigrane
+::-webkit-input-placeholder {
+  color: $filigrane;
+}
+
+::-moz-placeholder {
+  color: $filigrane;
+}
+
+:-ms-input-placeholder {
+  color: $filigrane;
+}
+
+:-moz-placeholder {
+  color: $filigrane;
+}
+
+input:-webkit-autofill::first-line {
+  font-family: $font; //A remplacer
+  font-size: rem(18); //A remplacer
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+// Input
+input,
+input[type='text'],
+input[type='number'],
+input[type='email'],
+input[type='search'],
+input[type='tel'],
+textarea,
+select {
+  &:focus {
+    outline: 0;
+  }
+
+  &.error,
+  &.input-validation-error {
+  }
+
+  &:disabled {
+  }
+
+  &:-webkit-autofill::first-line {
+    font-family: $font; //A remplacer
+    font-size: rem(18); //A remplacer
+  }
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+  }
+}
+
+//Message d'erreur
+.error,
+.field-validation-error {
+  color: $error;
+}
+
+.fakeSelect {
+  overflow: hidden;
+  position: relative;
+
+  select {
+    background: transparent;
+    border: none;
+    appearance: none;
+    text-indent: 1px;
+    text-overflow: '';
+  }
+
+  svg {
+    right: rem(16);
+    @include absoluteCenterY;
+    pointer-events: none;
+  }
+
+  &.focus {
+  }
+}
+
+.fakeCheckbox {
+  input {
+    position: absolute;
+    opacity: 0.001;
+    //Pas coché
+    + .icon {
+      .unchecked {
+        display: inline-block;
+      }
+
+      .checked {
+        display: none;
+      }
+    }
+    //Pas coché, focus
+    &:focus + span {
+    }
+    //Coché
+    &:checked + .icon {
+      .checked {
+        display: inline-block;
+      }
+
+      .unchecked {
+        display: none;
+      }
+    }
+    //Coché, focus
+    &:checked:focus + span {
+    }
+  }
+}
+
+.fakeRadio {
+  input {
+    position: absolute;
+    opacity: 0.001;
+    //Pas coché
+    + .icon {
+      .unchecked {
+        display: inline-block;
+      }
+
+      .checked {
+        display: none;
+      }
+    }
+    //Pas coché, focus
+    &:focus + span {
+    }
+    //Coché
+    &:checked + .icon {
+      .checked {
+        display: inline-block;
+      }
+
+      .unchecked {
+        display: none;
+      }
+    }
+    //Coché, focus
+    &:checked:focus + span {
+    }
+  }
+}

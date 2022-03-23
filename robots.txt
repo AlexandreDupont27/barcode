@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /404
+
+Sitemap: http://www.NomDuDomaine.com/sitemap.xml

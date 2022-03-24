@@ -1,0 +1,14 @@
+{
+	"routes": [
+		{
+			"route": "/en-ca/price-b",
+			"redirect": "/en-ca/price",
+			"statusCode": 301
+		}
+	],
+	"responseOverrides": {
+        "404": {
+            "rewrite": "/404"
+        }
+    }
+}

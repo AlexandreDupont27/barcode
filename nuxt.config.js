@@ -4,7 +4,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'BarcodeProject', // TO DO
+    title: 'barcode', // TO DO
     htmlAttrs: {
       lang: 'fr', // TO DO
     },

@@ -79,7 +79,7 @@ export default {
   //   routes: [],
   // },
   router: {
-    base: '/barcode'
+    base: '/barcode/'
   },
 
   styleResources: {

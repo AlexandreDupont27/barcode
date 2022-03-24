@@ -78,6 +78,9 @@ export default {
   //   gzip: true,
   //   routes: [],
   // },
+  router: {
+    base: '/barcode'
+  },
 
   styleResources: {
     scss: ['~/assets/css/global/*.scss'],

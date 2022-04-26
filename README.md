@@ -16,3 +16,11 @@ $ npm run generate
 ```
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+
+Pouvoir enregistrer les barcode/DMX
+
+Pouvoir en mettre en favoris avec un nom
+
+geenerer des code perso
+
+pouvoir revenir sur les dernier code generer

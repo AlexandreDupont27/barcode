@@ -21,7 +21,9 @@ export default {
   css: ['~/assets/css/main.scss', '~/assets/css/mediaQueries.scss'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [
+    '~/plugins/barcodeGenerator.js'
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -94,6 +96,10 @@ export default {
 
   generate: {
     fallback: '404.html',
+  },
+
+  server: {
+    port: 2713,
   },
 
   render: {

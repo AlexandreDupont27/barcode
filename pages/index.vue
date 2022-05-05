@@ -18,9 +18,17 @@
         ></ejs-datamatrixgenerator>
     </div> -->
     <div class="container w-100">
-      <div style="display: flex">
-        <div style="display: flex; flex-wrap: wrap">
-          <h3 style="margin-top: 0">Code info:</h3>
+      <div :class="['codeSettings', { showGenerateSolo: showGenerateCustom }]">
+        <h3 class="codeTitle">
+          Code info:
+          <span class="btn generateCustom" v-if="!showGenerateCustom" @click="showGenerateCustom = true">
+            Generate customs</span
+          >
+          <span class="btn generateCustom" v-if="showGenerateCustom" @click="showGenerateCustom = false">
+            Generate Multiples</span
+          >
+        </h3>
+        <div class="codeSetting">
           <label class="w-100 d-flex">
             <!-- Generer : -->
             <div class="d-flex w-100">
@@ -28,21 +36,21 @@
                 DMX:
                 <input v-model="type" type="radio" value="DMX" />
               </span>
-              <span style="margin-left: 15px">
+              <!-- <span style="margin-left: 15px">
                 Barcode:
                 <input v-model="type" type="radio" value="barcode" />
                 (12 characteres)
-              </span>
+              </span> -->
             </div>
           </label>
           <label class="w-100">
             Prefix :
             <input v-model="prefix" type="text" :disabled="type === 'barcode'" />
           </label>
-          <label class="w-100">
+          <!-- <label class="w-100">
             Sufix :
             <input v-model="prefix" type="text" :disabled="type === 'barcode'" />
-          </label>
+          </label> -->
           <label class="w-100">
             Nombre de code:
             <input v-model="codeNumber" type="text" />
@@ -55,14 +63,14 @@
           </label>
         </div>
 
-        <div>
+        <div class="codeSolo">
           <div style="display: flex; flex-wrap: wrap">
-            <label class="w-100">
+            <!-- <label class="w-100">
               <select v-model="selectedSavedCode">
                 <option value="">Sélectionner un code enregistrer</option>
                 <option v-for="code in savedCodes" :key="code" :value="code">{{ code }}</option>
               </select>
-            </label>
+            </label> -->
             <label class="w-100">
               Code à générer
               <input v-model="existingCode" type="text" :disabled="type === 'barcode'" />
@@ -72,11 +80,18 @@
               <span class="btn" v-if="showSolo" @click="resetSolo"> reset </span>
             </span>
           </div>
-          <img
+          <DMX v-if="showSolo" :code="existingCode">
+            <template #control>
+              <div class="control">
+                <div @click="savedDMX(existingCode)" class="btn">Save</div>
+              </div>
+            </template>
+          </DMX>
+          <!-- <img
             v-if="showSolo"
             style="margin-top: 20px"
             :src="`https://barcode.tec-it.com/barcode.ashx?data=${existingCode}${linkSufix}`"
-          />
+          /> -->
         </div>
       </div>
       <!-- <label class="w-100">
@@ -87,25 +102,37 @@
         to
         <input v-model="to" type="number" />
       </label> -->
-      <div class="w-100" style="display: flex; justify-content: space-between">
+      <div :class="['w-100 settingControl', , { showGenerateSolo: showGenerateCustom }]">
         <span>
           <span class="btn" @click="generate"> Generate </span>
           <span class="btn" @click="reset"> Reset </span>
         </span>
         <div>
-          <span class="btn" v-if="onlyOne" @click="next"> Next </span>
           <span class="btn" v-if="onlyOne && codeToShow !== 0" @click="prev"> Prev </span>
+          <span class="btn" v-if="onlyOne" @click="next"> Next </span>
         </div>
       </div>
-      <span class="btn" @click="openSavedCode = true"> Open saved code </span>
+      <div class="margin-top:10px">
+        <span class="btn" @click="openSavedCode = true"> Open saved code </span>
+        <span class="btn" @click="openLastUsedCode = true"> Open last used code </span>
+      </div>
     </div>
 
-    <div v-if="codes.length > 0" class="listBarcode">
-      <div class="container">
-        <ejs-datamatrixgenerator
-          v-for="(code, index) in codes"
-          v-show="!onlyOne || (onlyOne && index === codeToShow)"
-          :key="type + code"
+    <div v-if="codes.length > 0" :class="['listBarcode', , { showGenerateSolo: showGenerateCustom }]">
+      <!-- <div class="container"> -->
+      <DMX
+        v-for="(code, index) in codes"
+        v-show="!onlyOne || (onlyOne && index === codeToShow)"
+        :key="type + code"
+        :code="code.toString()"
+      >
+        <template #control>
+          <div class="control">
+            <div @click="savedDMX(code)" class="btn">Save</div>
+          </div>
+        </template>
+      </DMX>
+      <!-- <ejs-datamatrixgenerator
           class="barcodeStyle"
           id="barcode"
           ref="barcodeControl"
@@ -113,16 +140,16 @@
           width="100px"
           height="100px"
         >
-          <div class="control">
-            <div @click="savedSelectedCode(`${prefix}${code}`)" class="btn">Save</div>
-          </div>
-        </ejs-datamatrixgenerator>
-        <!-- <img
+
+        </ejs-datamatrixgenerator> -->
+      <!-- <img
           :src="`https://barcode.tec-it.com/barcode.ashx?data=${prefix}${code}${linkSufix}`"
         /> -->
-      </div>
+      <!-- </div> -->
     </div>
-    <SavedCode v-model="openSavedCode" :type="type" />
+    <SavedCode v-model="openconfirmation" :type="type" :code="selectedSavedCode" />
+    <ShowSavedCode v-model="openSavedCode" :type="type" />
+    <ShowLastUsedCode v-model="openLastUsedCode" :type="type" />
   </div>
 </template>
 
@@ -142,7 +169,10 @@ export default {
       existingCode: '',
       savedCodes: [],
       selectedSavedCode: '',
-      openSavedCode: false
+      openSavedCode: false,
+      openconfirmation: false,
+      openLastUsedCode: false,
+      showGenerateCustom: false,
     }
   },
   computed: {
@@ -167,25 +197,24 @@ export default {
     generate() {
       this.codes = []
       this.codeToShow = 0
-      const array = new Uint32Array(this.codeNumber + 1)
+      let array = new Uint32Array(this.codeNumber + 1)
       console.log('getRandomValues ; ', window.crypto.getRandomValues(array))
-
+      const newArray = array.map((t) => `${this.prefix}${t}`)
+      console.log('newArray : ', this.prefix)
       if (this.type === 'DMX') {
-        for (let i = 0; i <= this.codeNumber; i++) {
-          this.codes = window.crypto.getRandomValues(array)
-        }
+        let gg = window.crypto.getRandomValues(array)
+        console.log('gg :', gg)
+        gg.forEach((t) => {
+          this.codes.push(this.prefix + t)
+        })
       } else {
         for (let i = 0; i <= this.codeNumber; i++) {
           this.codes.push(`01${array[i].toString().slice(0, 9)}2`)
         }
-        // for (let i = 0; i <= this.codeNumber; i++) {
-        //   this.codes.push(
-        //     `01${this.randomN()}${this.randomN()}${this.randomN()}${this.randomN()}${this.randomN()}${this.randomN()}${this.randomN()}${this.randomN()}${this.randomN()}2`
-        //   )
-        // }
       }
+
+      console.log('this.codes', this.codes)
       this.saveLastGeneratedCode()
-      console.log('this.codes ; ', this.codes)
     },
     generateSolo() {
       this.showSolo = true
@@ -225,47 +254,81 @@ export default {
     getLastSavedCode() {
       this.savedCodes = localStorage.getItem(`save_last_${this.type}`).split(',')
     },
+    savedDMX(dmx) {
+      this.selectedSavedCode = dmx
+      this.openconfirmation = true
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-input {
-  border: 1px solid black;
+.codeSettings {
+  display: flex;
+  align-items: baseline;
 }
-
-.container {
+.codeSetting {
   display: flex;
   flex-wrap: wrap;
 }
 
-.w-100 {
+.generateCustom {
+  display: none;
+}
+
+.settingControl {
+  display: flex;
+  justify-content: space-between;
+  &.showGenerateSolo {
+    display: none;
+  }
+}
+
+.codeTitle {
+  display: none;
+  margin-top: 0;
   width: 100%;
 }
 
-label {
-  margin-bottom: 8px;
-}
+@media screen and (max-width: 767px) {
+  .generateCustom {
+    display: block;
+  }
+  .codeSettings {
+    flex-wrap: wrap;
+    .codeSetting {
+      width: 100%;
+    }
 
-.d-flex {
-  display: flex;
-}
+    .codeSolo {
+      width: 100%;
+      display: none;
+      flex-wrap: wrap;
 
-.flex-wrap {
-  flex-wrap: wrap;
-}
+      .barcodeStyleImg {
+        width:100%;
+      }
+    }
 
-.pa-4 {
-  padding: 16px;
-}
+    &.showGenerateSolo {
+      .codeSetting {
+        display: none;
+      }
 
-.btn {
-  padding: 8px;
-  background-color: lightgrey;
-  border-radius: 5px;
-  margin: 4px 4px 0 0;
-  display: inline-flex;
-  width: auto;
-  cursor: pointer;
+      .codeSolo {
+        display: flex;
+      }
+    }
+  }
+
+  .codeTitle {
+    display: block;
+  }
+
+  .listBarcode {
+    &.showGenerateSolo {
+      display: none;
+    }
+  }
 }
 </style>

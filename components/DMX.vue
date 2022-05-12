@@ -1,5 +1,5 @@
 <template>
-  <div class="barcodeStyleImg" id="barcode" ref="barcodeControl">
+  <div class="dmxStyleImg" id="barcode" ref="barcodeControl">
     <div v-if="title" class="title">{{ title }}</div>
     <div class="infoContainer">
       <img
@@ -10,18 +10,6 @@
         <slot name="control"></slot>
       </div>
     </div>
-
-  <!-- <ejs-datamatrixgenerator
-    class="barcodeStyle"
-    id="barcode"
-    ref="barcodeControl"
-    :value="code"
-    width="100px"
-    height="100px"
-  >
-    <div v-if="title" class="title">{{ title }}</div>
-    <slot name="control"></slot>
-  </ejs-datamatrixgenerator> -->
   </div>
 </template>
 

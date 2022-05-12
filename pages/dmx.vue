@@ -15,7 +15,7 @@
           <label class="w-100 d-flex">
             <!-- Generer : -->
             <div class="d-flex w-100">
-              <span style="margin-right: 16px;">
+              <span style="margin-right: 16px">
                 DMX:
                 <input v-model="type" type="radio" value="DMX" />
               </span>
@@ -26,12 +26,8 @@
             </div>
           </label>
           <label class="w-100">
-            Type de barcode :
-            <select v-model="barcodeType">
-              <option value="">Sélectionner un type de barcode</option>
-              <option v-for="code in barcodeTypes" :key="code.name" :value="code">{{ code.name }}</option>
-            </select>
-            <span>({{ barcodeType.numberNeeded }}) number</span>
+            Prefix :
+            <input v-model="prefix" type="text" :disabled="type === 'barcode'" />
           </label>
           <label class="w-100">
             Nombre de code:
@@ -49,20 +45,20 @@
           <div style="display: flex; flex-wrap: wrap">
             <label class="w-100">
               Code à générer
-              <input v-model="existingCode" type="text" />
+              <input v-model="existingCode" type="text" :disabled="type === 'barcode'" />
             </label>
             <span class="w-100">
               <span class="btn" @click="generateSolo"> Generate </span>
               <span class="btn" v-if="showSolo" @click="resetSolo"> reset </span>
             </span>
           </div>
-          <Barcode v-if="showSolo" :code="existingCode.toString()" :link-suffix="barcodeType.suffix">
+          <DMX v-if="showSolo" :code="existingCode">
             <template #control>
               <div class="control">
                 <div @click="savedDMX(existingCode)" class="btn">Save</div>
               </div>
             </template>
-          </Barcode>
+          </DMX>
         </div>
       </div>
       <div :class="['w-100 settingControl', , { showGenerateSolo: showGenerateCustom }]">
@@ -72,7 +68,7 @@
         </span>
         <div>
           <span class="btn" v-if="onlyOne && codeToShow !== 0" @click="prev"> Prev </span>
-          <span v-if="onlyOne" style="margin-right: 4px">{{codeToShow + 1}}</span>
+          <span v-if="onlyOne" style="margin-right: 4px">{{ codeToShow + 1 }}</span>
           <span class="btn" v-if="onlyOne" @click="next"> Next </span>
         </div>
       </div>
@@ -83,21 +79,20 @@
     </div>
 
     <div v-if="codes.length > 0" :class="['listBarcode', , { showGenerateSolo: showGenerateCustom }]">
-      <Barcode
+      <DMX
         v-for="(code, index) in codes"
         v-show="!onlyOne || (onlyOne && index === codeToShow)"
         :key="type + code"
         :code="code.toString()"
-        :link-suffix="barcodeType.suffix"
       >
         <template #control>
           <div class="control">
             <div @click="savedDMX(code)" class="btn">Save</div>
           </div>
         </template>
-      </Barcode>
+      </DMX>
     </div>
-    <SavedCode v-model="openconfirmation" :type="type" :code="selectedSavedCode" :barcode-suffix="barcodeType.suffix" />
+    <SavedCode v-model="openconfirmation" :type="type" :code="selectedSavedCode" />
     <ShowSavedCode v-model="openSavedCode" :type="type" />
     <ShowLastUsedCode v-model="openLastUsedCode" :type="type" />
   </div>
@@ -108,36 +103,10 @@ export default {
   data() {
     return {
       codeNumber: 20,
+      prefix: 'A',
       from: 0,
       to: 0,
-      type: 'barcode',
-      barcodeType: {
-        name: 'UPC-A',
-        suffix: 'UPCA',
-        numberNeeded: 11,
-      },
-      barcodeTypes: [
-        {
-          name: 'UPC-A',
-          suffix: 'UPCA',
-          numberNeeded: 11,
-        },
-        {
-          name: 'UPC-E',
-          suffix: 'UPCE',
-          numberNeeded: 7,
-        },
-        {
-          name: 'EAN-8',
-          suffix: 'EAN8',
-          numberNeeded: 7,
-        },
-        {
-          name: 'EAN-13',
-          suffix: 'EAN13',
-          numberNeeded: 12,
-        },
-      ],
+      type: 'DMX',
       codes: [],
       onlyOne: false,
       showSolo: false,
@@ -151,31 +120,22 @@ export default {
       showGenerateCustom: false,
     }
   },
-  computed: {
-    linkSufix() {
-      if (this.barcodeType === 'barcode') {
-        return '&code=UPCA'
-      }
-    },
-  },
   watch: {
     type(val) {
-      if (val === 'DMX') {
-        this.$router.push('/dmx')
+      if (val === 'barcode') {
+        this.$router.push('/')
       }
-    }
+    },
   },
   methods: {
     generate() {
       this.codes = []
       this.codeToShow = 0
       let array = new Uint32Array(parseInt(this.codeNumber))
-      let randomArray = window.crypto.getRandomValues(array)
 
+      let randomArray = window.crypto.getRandomValues(array)
       randomArray.forEach((t) => {
-        const randomNumber = Math.floor(Math.random(t) * t)
-        const finalNumber = `${randomNumber}${t}`
-        this.codes.push(finalNumber.toString().substring(0, this.barcodeType.numberNeeded))
+        this.codes.push(this.prefix + t)
       })
 
       this.saveLastGeneratedCode()
@@ -206,14 +166,7 @@ export default {
       }
     },
     saveLastGeneratedCode() {
-      let lastGeneratedCode = this.codes.map((t) => {
-        return {
-          code: t,
-          suffix: this.barcodeType.suffix,
-        }
-      })
-
-      localStorage.setItem(`save_last_${this.type}`, JSON.stringify(lastGeneratedCode))
+      localStorage.setItem(`save_last_${this.type}`, this.codes)
     },
     getLastSavedGeneratedCode() {
       this.code = localStorage.getItem(`save_last_${this.type}`).split(',')

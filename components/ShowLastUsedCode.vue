@@ -1,17 +1,17 @@
 <template>
   <Modal v-model="open">
     <template>
-      <h3>Last used Dmx:</h3>
+      <h3>Last used {{ type }}:</h3>
 
       <div class="listBarcode flex-start">
         <div class="container">
-          <DMX v-for="code in codeList" :key="type + code" :code="code">
-            <!-- <template #control>
-              <div class="control">
-                <div @click="DeleteDMX(code.code)" class="btn red">Delete</div>
-              </div>
-            </template> -->
-          </DMX>
+          <template v-if="type === 'DMX'">
+            <DMX v-for="code in codeList" :key="type + code" :code="code"> </DMX>
+          </template>
+          <template v-else>
+            <Barcode v-for="code in codeList" :key="type + code.code" :code="code.code" :link-suffix="code.suffix">
+            </Barcode>
+          </template>
         </div>
       </div>
     </template>
@@ -48,7 +48,11 @@ export default {
   watch: {
     value() {
       if (localStorage.getItem(`save_last_${this.type}`)) {
-        this.codeList = localStorage.getItem(`save_last_${this.type}`).split(',')
+        if (this.type === 'DMX') {
+          this.codeList = localStorage.getItem(`save_last_${this.type}`).split(',')
+        } else {
+          this.codeList = JSON.parse(localStorage.getItem(`save_last_${this.type}`))
+        }
       }
     },
   },
@@ -56,8 +60,8 @@ export default {
     DeleteDMX(code) {
       this.codeList = this.codeList.filter((t) => t.code !== code)
       localStorage.setItem(`save_${this.type}`, JSON.stringify(this.codeList))
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -68,6 +72,15 @@ export default {
 
 .red {
   background-color: rgb(180, 41, 41) !important;
-  color:white;
+  color: white;
+}
+
+.listBarcode {
+  max-height: 500px;
+  overflow: auto;
+
+  @media screen and (max-width: 767px) {
+    max-height: 95%;
+  }
 }
 </style>

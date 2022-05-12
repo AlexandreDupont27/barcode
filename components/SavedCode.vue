@@ -1,15 +1,16 @@
 <template>
   <Modal v-model="open">
     <template>
-      <h3>Saved Dmx:</h3>
+      <h3>Saved {{ type }}:</h3>
       <label>
         <span>Add name :</span>
         <input v-model="title" type="text" />
       </label>
 
-      <div class="">
+      <div class="listBarcode flex-start">
         <div class="container">
-          <DMX :code="code"></DMX>
+          <DMX v-if="type === 'DMX'" :code="code"></DMX>
+          <Barcode v-else :code="code.toString()" :link-suffix="barcodeSuffix"></Barcode>
         </div>
       </div>
 
@@ -33,6 +34,10 @@ export default {
       type: String,
       default: '',
     },
+    barcodeSuffix: {
+      type: String,
+      default: '',
+    },
   },
   computed: {
     open: {
@@ -51,9 +56,19 @@ export default {
   },
   methods: {
     save() {
-      const savedCode = {
-        code: this.code,
-        title: this.title,
+      let savedCode = null
+
+      if (this.type === 'DMX') {
+        savedCode = {
+          code: this.code,
+          title: this.title,
+        }
+      } else {
+        savedCode = {
+          code: this.code,
+          title: this.title,
+          suffix: this.barcodeSuffix,
+        }
       }
 
       let codes = JSON.parse(localStorage.getItem(`save_${this.type}`))
@@ -63,8 +78,6 @@ export default {
       }
 
       codes.push(savedCode)
-
-      console.log('codes :', codes)
 
       localStorage.setItem(`save_${this.type}`, JSON.stringify(codes))
       this.open = false
@@ -109,5 +122,18 @@ export default {
       cursor: pointer;
     }
   }
+}
+
+.listBarcode {
+  max-height: 500px;
+  overflow: auto;
+
+  @media screen and (max-width: 767px) {
+    max-height: 95%;
+  }
+}
+
+.flex-start {
+  justify-content: flex-start;
 }
 </style>

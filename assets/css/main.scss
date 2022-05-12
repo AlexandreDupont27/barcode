@@ -410,7 +410,7 @@ body {
 }
 
 
-.barcodeStyleImg {
+.dmxStyleImg {
   max-height: rem(100);
   max-width: rem(100);
   margin: rem(10);
@@ -477,12 +477,17 @@ body {
   }
 
   @media screen and (max-width: 767px) {
-    max-height: rem(140);
-    max-width: rem(140);
+    max-height: 100%;
+    max-width: 100%;
+    width: 100%;
+
+    .infoContainer {
+      padding: rem(20);
+    }
 
     img {
-      height: rem(100);
-      width: rem(100);
+      height: 100%;
+      width: 100%;
     }
   }
 }

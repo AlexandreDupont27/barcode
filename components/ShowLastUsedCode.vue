@@ -6,10 +6,34 @@
       <div class="listBarcode flex-start">
         <div class="container">
           <template v-if="type === 'DMX'">
-            <DMX v-for="code in codeList" :key="type + code" :code="code"> </DMX>
+            <DMX
+              v-for="code in codeList"
+              :class="{ hide: selectedCode && selectedCode !== code.code }"
+              :key="type + code"
+              :code="code"
+            >
+              <template #control>
+                <div class="control">
+                  <div v-if="!selectedCode" @click="showMe(code.code)" class="btn blue">Show only me</div>
+                  <div v-if="selectedCode === code.code" @click="showAll()" class="btn blue">Show All</div>
+                </div>
+              </template>
+            </DMX>
           </template>
           <template v-else>
-            <Barcode v-for="code in codeList" :key="type + code.code" :code="code.code" :link-suffix="code.suffix">
+            <Barcode
+              v-for="code in codeList"
+              :class="{ hide: selectedCode && selectedCode !== code.code }"
+              :key="type + code.code"
+              :code="code.code"
+              :link-suffix="code.suffix"
+            >
+              <template #control>
+                <div class="control">
+                  <div v-if="!selectedCode" @click="showMe(code.code)" class="btn blue">Show only me</div>
+                  <div v-if="selectedCode === code.code" @click="showAll()" class="btn blue">Show All</div>
+                </div>
+              </template>
             </Barcode>
           </template>
         </div>
@@ -43,6 +67,7 @@ export default {
   data() {
     return {
       codeList: [],
+      selectedCode: '',
     }
   },
   watch: {
@@ -60,6 +85,12 @@ export default {
     DeleteDMX(code) {
       this.codeList = this.codeList.filter((t) => t.code !== code)
       localStorage.setItem(`save_${this.type}`, JSON.stringify(this.codeList))
+    },
+    showMe(code) {
+      this.selectedCode = code
+    },
+    showAll() {
+      this.selectedCode = ''
     },
   },
 }

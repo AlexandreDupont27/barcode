@@ -81,6 +81,7 @@
     <div v-if="codes.length > 0" :class="['listBarcode', , { showGenerateSolo: showGenerateCustom }]">
       <DMX
         v-for="(code, index) in codes"
+        :class="{ hide: selectedCode && selectedCode !== code }"
         v-show="!onlyOne || (onlyOne && index === codeToShow)"
         :key="type + code"
         :code="code.toString()"
@@ -88,6 +89,8 @@
         <template #control>
           <div class="control">
             <div @click="savedDMX(code)" class="btn">Save</div>
+            <div v-if="!selectedCode" @click="showMe(code)" class="btn blue">Show only me</div>
+            <div v-if="selectedCode === code" @click="showAll()" class="btn blue">Show All</div>
           </div>
         </template>
       </DMX>
@@ -118,6 +121,7 @@ export default {
       openconfirmation: false,
       openLastUsedCode: false,
       showGenerateCustom: false,
+      selectedCode: '',
     }
   },
   watch: {
@@ -181,6 +185,12 @@ export default {
     savedDMX(dmx) {
       this.selectedSavedCode = dmx
       this.openconfirmation = true
+    },
+    showMe(code) {
+      this.selectedCode = code
+    },
+    showAll() {
+      this.selectedCode = ''
     },
   },
 }

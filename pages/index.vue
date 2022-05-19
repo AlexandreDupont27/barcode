@@ -15,7 +15,7 @@
           <label class="w-100 d-flex">
             <!-- Generer : -->
             <div class="d-flex w-100">
-              <span style="margin-right: 16px;">
+              <span style="margin-right: 16px">
                 DMX:
                 <input v-model="type" type="radio" value="DMX" />
               </span>
@@ -72,7 +72,7 @@
         </span>
         <div>
           <span class="btn" v-if="onlyOne && codeToShow !== 0" @click="prev"> Prev </span>
-          <span v-if="onlyOne" style="margin-right: 4px">{{codeToShow + 1}}</span>
+          <span v-if="onlyOne" style="margin-right: 4px">{{ codeToShow + 1 }}</span>
           <span class="btn" v-if="onlyOne" @click="next"> Next </span>
         </div>
       </div>
@@ -85,6 +85,7 @@
     <div v-if="codes.length > 0" :class="['listBarcode', , { showGenerateSolo: showGenerateCustom }]">
       <Barcode
         v-for="(code, index) in codes"
+        :class="{ hide: selectedCode && selectedCode !== code }"
         v-show="!onlyOne || (onlyOne && index === codeToShow)"
         :key="type + code"
         :code="code.toString()"
@@ -93,6 +94,8 @@
         <template #control>
           <div class="control">
             <div @click="savedDMX(code)" class="btn">Save</div>
+            <div v-if="!selectedCode" @click="showMe(code)" class="btn blue">Show only me</div>
+            <div v-if="selectedCode === code" @click="showAll()" class="btn blue">Show All</div>
           </div>
         </template>
       </Barcode>
@@ -149,6 +152,7 @@ export default {
       openconfirmation: false,
       openLastUsedCode: false,
       showGenerateCustom: false,
+      selectedCode: '',
     }
   },
   computed: {
@@ -163,7 +167,7 @@ export default {
       if (val === 'DMX') {
         this.$router.push('/dmx')
       }
-    }
+    },
   },
   methods: {
     generate() {
@@ -228,6 +232,12 @@ export default {
     savedDMX(dmx) {
       this.selectedSavedCode = dmx
       this.openconfirmation = true
+    },
+    showMe(code) {
+      this.selectedCode = code
+    },
+    showAll() {
+      this.selectedCode = ''
     },
   },
 }

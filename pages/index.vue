@@ -28,7 +28,6 @@
           <label class="w-100">
             Type de barcode :
             <select v-model="barcodeType">
-              <option value="">Sélectionner un type de barcode</option>
               <option v-for="code in barcodeTypes" :key="code.name" :value="code">{{ code.name }}</option>
             </select>
             <span>({{ barcodeType.numberNeeded }}) number</span>
@@ -50,6 +49,9 @@
             <label class="w-100">
               Code à générer
               <input v-model="existingCode" type="text" />
+              <span class="w-100 d-flex">
+                {{ `${existingCode.length}/${barcodeType.numberNeeded}` }}
+              </span>
             </label>
             <span class="w-100">
               <span class="btn" @click="generateSolo"> Generate </span>
@@ -166,6 +168,17 @@ export default {
     type(val) {
       if (val === 'DMX') {
         this.$router.push('/dmx')
+      }
+    },
+    existingCode(value) {
+      if (value?.length > 7) {
+        if (value.length > 11) {
+          this.barcodeType = this.barcodeTypes[3]
+        } else {
+          this.barcodeType = this.barcodeTypes[0]
+        }
+      } else {
+        this.barcodeType = this.barcodeTypes[1]
       }
     },
   },
